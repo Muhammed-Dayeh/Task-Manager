@@ -1,8 +1,8 @@
 'use client';
 
 import { Languages } from 'lucide-react';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Language } from '@/lib/i18n';
 
 interface LanguageSwitcherProps {
@@ -17,29 +17,25 @@ export function LanguageSwitcher({ currentLanguage, onLanguageChange }: Language
     { code: 'tr' as Language, name: 'Türkçe', flag: '🇹🇷' },
   ];
 
-  const currentLang = languages.find(lang => lang.code === currentLanguage);
-
   return (
-    <Select value={currentLanguage} onValueChange={(value: Language) => onLanguageChange(value)}>
-      <SelectTrigger className="w-[140px]">
-        <div className="flex items-center space-x-2">
-          <Languages className="h-4 w-4" />
-          <span className="flex items-center space-x-1">
-            <span>{currentLang?.flag}</span>
-            <span className="hidden sm:inline">{currentLang?.name}</span>
-          </span>
-        </div>
-      </SelectTrigger>
-      <SelectContent>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Languages className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
         {languages.map((language) => (
-          <SelectItem key={language.code} value={language.code}>
-            <div className="flex items-center space-x-2">
-              <span>{language.flag}</span>
-              <span>{language.name}</span>
-            </div>
-          </SelectItem>
+          <DropdownMenuItem
+            key={language.code}
+            onClick={() => onLanguageChange(language.code)}
+            className="flex items-center gap-2"
+          >
+            <span>{language.flag}</span>
+            <span>{language.name}</span>
+          </DropdownMenuItem>
         ))}
-      </SelectContent>
-    </Select>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

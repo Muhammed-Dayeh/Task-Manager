@@ -14,6 +14,7 @@ import { Task, TaskPriority, TaskStatus } from '@/types/task';
 import { Language, getTranslation, isRTL } from '@/lib/i18n';
 
 export function TaskManager() {
+  const [mounted, setMounted] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -25,6 +26,10 @@ export function TaskManager() {
 
   const t = getTranslation(language);
   const rtl = isRTL(language);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load tasks and language from localStorage on component mount
   useEffect(() => {
@@ -57,6 +62,8 @@ export function TaskManager() {
     document.documentElement.dir = rtl ? 'rtl' : 'ltr';
     document.documentElement.lang = language;
   }, [language, rtl]);
+  
+  if (!mounted) return null;
 
   const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newTask: Task = {
