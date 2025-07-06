@@ -9,7 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { TaskForm } from './TaskForm';
 import { TaskList } from './TaskList';
 import { TaskFilters } from './TaskFilters';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { Task, TaskPriority, TaskStatus } from '@/types/task';
+import { Language, getTranslation, isRTL } from '@/lib/i18n';
 
 export function TaskManager() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -18,11 +20,17 @@ export function TaskManager() {
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [language, setLanguage] = useState<Language>('en');
   const { theme, setTheme } = useTheme();
 
-  // Load tasks from localStorage on component mount
+  const t = getTranslation(language);
+  const rtl = isRTL(language);
+
+  // Load tasks and language from localStorage on component mount
   useEffect(() => {
     const savedTasks = localStorage.getItem('tasks');
+    const savedLanguage = localStorage.getItem('language') as Language;
+    
     if (savedTasks) {
       try {
         const parsedTasks = JSON.parse(savedTasks);
@@ -31,12 +39,24 @@ export function TaskManager() {
         console.error('Error loading tasks from localStorage:', error);
       }
     }
+    
+    if (savedLanguage && ['en', 'ar', 'tr'].includes(savedLanguage)) {
+      setLanguage(savedLanguage);
+    }
   }, []);
 
   // Save tasks to localStorage whenever tasks change
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
+
+  // Save language to localStorage whenever language changes
+  useEffect(() => {
+    localStorage.setItem('language', language);
+    // Update document direction for RTL support
+    document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+  }, [language, rtl]);
 
   const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newTask: Task = {
@@ -94,18 +114,22 @@ export function TaskManager() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className={`container mx-auto px-4 py-8 max-w-4xl ${rtl ? 'rtl' : 'ltr'}`}>
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              Task Manager
+              {t.taskManager}
             </h1>
             <p className="text-gray-600 dark:text-gray-300">
-              Organize your tasks efficiently
+              {t.organizeTasksEfficiently}
             </p>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 rtl:space-x-reverse">
+            <LanguageSwitcher 
+              currentLanguage={language} 
+              onLanguageChange={setLanguage} 
+            />
             <Button
               variant="outline"
               size="icon"
@@ -117,8 +141,8 @@ export function TaskManager() {
               onClick={() => setShowTaskForm(true)}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Task
+              <Plus className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+              {t.addTask}
             </Button>
           </div>
         </div>
@@ -129,7 +153,7 @@ export function TaskManager() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                    Total Tasks
+                    {t.totalTasks}
                   </p>
                   <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                     {taskCounts.all}
@@ -147,7 +171,7 @@ export function TaskManager() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
-                    Active Tasks
+                    {t.activeTasks}
                   </p>
                   <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
                     {taskCounts.active}
@@ -165,7 +189,7 @@ export function TaskManager() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                    Completed
+                    {t.completed}
                   </p>
                   <p className="text-2xl font-bold text-green-900 dark:text-green-100">
                     {taskCounts.completed}
@@ -186,13 +210,15 @@ export function TaskManager() {
           setPriorityFilter={setPriorityFilter}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
+          translations={t}
+          rtl={rtl}
         />
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Tasks</span>
+            <span>{t.tasks}</span>
             <Badge variant="secondary">{filteredTasks.length}</Badge>
           </CardTitle>
         </CardHeader>
@@ -202,6 +228,8 @@ export function TaskManager() {
             onToggleComplete={toggleTaskComplete}
             onEdit={setEditingTask}
             onDelete={deleteTask}
+            translations={t}
+            rtl={rtl}
           />
         </CardContent>
       </Card>
@@ -217,6 +245,8 @@ export function TaskManager() {
             setShowTaskForm(false);
             setEditingTask(null);
           }}
+          translations={t}
+          rtl={rtl}
         />
       )}
     </div>

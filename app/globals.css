@@ -80,3 +80,41 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="rtl"] .rtl {
+  direction: rtl;
+}
+
+/* Custom RTL utilities */
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+/* Ensure proper text alignment for RTL */
+[dir="rtl"] input,
+[dir="rtl"] textarea {
+  text-align: right;
+}
+
+[dir="ltr"] input,
+[dir="ltr"] textarea {
+  text-align: left;
+}
+
+/* Fix for select components in RTL */
+[dir="rtl"] [role="combobox"] {
+  text-align: right;
+}
+
+[dir="ltr"] [role="combobox"] {
+  text-align: left;
+}
