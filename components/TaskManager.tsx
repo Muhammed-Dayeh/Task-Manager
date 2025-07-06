@@ -145,12 +145,13 @@ export function TaskManager() {
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
             <Button
-              onClick={() => setShowTaskForm(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Plus className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
-              {t.addTask}
-            </Button>
+  onClick={() => setShowTaskForm(true)}
+  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base whitespace-nowrap"
+>
+  <Plus className="h-4 w-4 mr-0 sm:mr-2" />
+  <span className="hidden sm:inline">{t.addTask}</span>
+</Button>
+
           </div>
         </div>
 
