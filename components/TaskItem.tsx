@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Edit2, Trash2, Calendar, Clock, CheckCircle, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,8 +18,6 @@ interface TaskItemProps {
 }
 
 export function TaskItem({ task, onToggleComplete, onEdit, onDelete, translations: t, rtl }: TaskItemProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
       case 'high': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
@@ -66,11 +63,9 @@ export function TaskItem({ task, onToggleComplete, onEdit, onDelete, translation
 
   return (
     <Card
-      className={`transition-all duration-200 hover:shadow-md ${
+      className={`group transition-all duration-200 hover:shadow-md ${
         task.status === 'completed' ? 'opacity-75' : ''
       } ${isOverdue ? 'border-red-200 dark:border-red-800' : ''}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <CardContent className="p-4">
         <div className={`flex items-start space-x-3 ${rtl ? 'space-x-reverse' : ''}`}>
@@ -90,8 +85,8 @@ export function TaskItem({ task, onToggleComplete, onEdit, onDelete, translation
           </button>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className={`font-semibold ${
+            <div className="flex items-center justify-between mb-2 ">
+              <h3 className={`font-semibold line-clamp-2 ${
                 task.status === 'completed' 
                   ? 'line-through text-gray-500 dark:text-gray-400' 
                   : 'text-gray-900 dark:text-white'
@@ -108,20 +103,19 @@ export function TaskItem({ task, onToggleComplete, onEdit, onDelete, translation
               </div>
             </div>
 
-            <p className={`text-sm mb-3 ${
-              task.status === 'completed' 
-                ? 'line-through text-gray-400 dark:text-gray-500' 
-                : 'text-gray-600 dark:text-gray-300'
-            }`}>
-              {task.description}
-            </p>
+            <p className={`text-sm mb-3 break-words ${
+  task.status === 'completed' 
+    ? 'line-through text-gray-400 dark:text-gray-500' 
+    : 'text-gray-600 dark:text-gray-300'
+}`}>
+  {task.description}
+</p>
+
 
             <div className="flex items-center justify-between">
               <div className={`flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400 ${rtl ? 'space-x-reverse' : ''}`}>
                 {task.dueDate && (
-                  <div className={`flex items-center space-x-1 ${rtl ? 'space-x-reverse' : ''} ${
-                    isOverdue ? 'text-red-600 dark:text-red-400' : ''
-                  }`}>
+                  <div className={`flex items-center space-x-1 ${rtl ? 'space-x-reverse' : ''} ${isOverdue ? 'text-red-600 dark:text-red-400' : ''}`}>
                     <Calendar className="h-3 w-3" />
                     <span>{formatDate(task.dueDate)}</span>
                     {isOverdue && <span className={`font-semibold ${rtl ? 'mr-1' : 'ml-1'}`}>({t.overdue})</span>}
@@ -133,9 +127,7 @@ export function TaskItem({ task, onToggleComplete, onEdit, onDelete, translation
                 </div>
               </div>
 
-              <div className={`flex items-center space-x-1 transition-opacity duration-200 ${rtl ? 'space-x-reverse' : ''} ${
-                isHovered ? 'opacity-100' : 'opacity-0'
-              }`}>
+              <div className={`flex items-center space-x-1 ${rtl ? 'space-x-reverse' : ''} transition-opacity duration-200 opacity-100 sm:opacity-0 sm:group-hover:opacity-100`}>
                 <Button
                   variant="ghost"
                   size="sm"
