@@ -1,18 +1,24 @@
-'use client';
+"use client";
 
-import { Search, Filter, Flag, CheckCircle, Circle, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
-import { TaskPriority } from '@/types/task';
-import { Translations } from '@/lib/i18n';
+import { Search, Filter, Flag, CheckCircle, Circle, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { TaskPriority } from "@/types/task";
+import { Translations } from "@/lib/i18n";
 
 interface TaskFiltersProps {
-  filter: 'all' | 'active' | 'completed';
-  setFilter: (filter: 'all' | 'active' | 'completed') => void;
-  priorityFilter: TaskPriority | 'all';
-  setPriorityFilter: (priority: TaskPriority | 'all') => void;
+  filter: "all" | "active" | "completed";
+  setFilter: (filter: "all" | "active" | "completed") => void;
+  priorityFilter: TaskPriority | "all";
+  setPriorityFilter: (priority: TaskPriority | "all") => void;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   translations: Translations;
@@ -30,9 +36,9 @@ export function TaskFilters({
   rtl,
 }: TaskFiltersProps) {
   const filterButtons = [
-    { key: 'all', label: t.allTasks, icon: Filter },
-    { key: 'active', label: t.active, icon: Circle },
-    { key: 'completed', label: t.completed, icon: CheckCircle },
+    { key: "all", label: t.allTasks, icon: Filter },
+    { key: "active", label: t.active, icon: Circle },
+    { key: "completed", label: t.completed, icon: CheckCircle },
   ] as const;
 
   return (
@@ -41,14 +47,16 @@ export function TaskFilters({
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 ${
-                rtl ? 'right-3' : 'left-3'
-              }`} />
+              <Search
+                className={`absolute top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 ${
+                  rtl ? "right-3" : "left-3"
+                }`}
+              />
               <Input
                 placeholder={t.searchTasks}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={rtl ? 'pr-10' : 'pl-10'}
+                className={rtl ? "pr-10" : "pl-10"}
               />
             </div>
           </div>
@@ -57,10 +65,9 @@ export function TaskFilters({
             {filterButtons.map(({ key, label, icon: Icon }) => (
               <Button
                 key={key}
-                variant={filter === key ? 'default' : 'outline'}
+                variant={filter === key ? "default" : "outline"}
                 onClick={() => setFilter(key)}
-                className="flex items-center space-x-2 rtl:space-x-reverse"
-              >
+                className="flex items-center space-x-2 rtl:space-x-reverse">
                 <Icon className="h-4 w-4" />
                 <span className="hidden sm:inline">{label}</span>
               </Button>
@@ -70,8 +77,9 @@ export function TaskFilters({
           <div className="min-w-[140px]">
             <Select
               value={priorityFilter}
-              onValueChange={(value: TaskPriority | 'all') => setPriorityFilter(value)}
-            >
+              onValueChange={(value: TaskPriority | "all") =>
+                setPriorityFilter(value)
+              }>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

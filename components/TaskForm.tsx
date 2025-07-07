@@ -1,31 +1,45 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { X, Calendar, Flag, Type, AlignLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Task, TaskPriority, TaskStatus } from '@/types/task';
-import { Translations } from '@/lib/i18n';
+import { useState, useEffect } from "react";
+import { X, Calendar, Flag, Type, AlignLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Task, TaskPriority, TaskStatus } from "@/types/task";
+import { Translations } from "@/lib/i18n";
 
 interface TaskFormProps {
   task?: Task | null;
-  onSubmit: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (task: Omit<Task, "id" | "createdAt" | "updatedAt">) => void;
   onClose: () => void;
   translations: Translations;
   rtl: boolean;
 }
 
-export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: TaskFormProps) {
-  const [title, setTitle] = useState(task?.title || '');
-  const [description, setDescription] = useState(task?.description || '');
-  const [priority, setPriority] = useState<TaskPriority>(task?.priority || 'medium');
-  const [status, setStatus] = useState<TaskStatus>(task?.status || 'pending');
-  const [dueDate, setDueDate] = useState(task?.dueDate || '');
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+export function TaskForm({
+  task,
+  onSubmit,
+  onClose,
+  translations: t,
+  rtl,
+}: TaskFormProps) {
+  const [title, setTitle] = useState(task?.title || "");
+  const [description, setDescription] = useState(task?.description || "");
+  const [priority, setPriority] = useState<TaskPriority>(
+    task?.priority || "medium"
+  );
+  const [status, setStatus] = useState<TaskStatus>(task?.status || "pending");
+  const [dueDate, setDueDate] = useState(task?.dueDate || "");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (task) {
@@ -33,17 +47,17 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
       setDescription(task.description);
       setPriority(task.priority);
       setStatus(task.status);
-      setDueDate(task.dueDate || '');
+      setDueDate(task.dueDate || "");
     }
   }, [task]);
 
   const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
-    
+    const newErrors: { [key: string]: string } = {};
+
     if (!title.trim()) {
       newErrors.title = t.titleRequired;
     }
-    
+
     if (!description.trim()) {
       newErrors.description = t.descriptionRequired;
     }
@@ -54,7 +68,7 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     onSubmit({
@@ -80,7 +94,9 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="title" className="flex items-center space-x-2 rtl:space-x-reverse">
+              <Label
+                htmlFor="title"
+                className="flex items-center space-x-2 rtl:space-x-reverse">
                 <Type className="h-4 w-4" />
                 <span>{t.title}</span>
               </Label>
@@ -89,13 +105,17 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={t.enterTaskTitle}
-                className={errors.title ? 'border-red-500' : ''}
+                className={errors.title ? "border-red-500" : ""}
               />
-              {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
+              {errors.title && (
+                <p className="text-sm text-red-500">{errors.title}</p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="flex items-center space-x-2 rtl:space-x-reverse">
+              <Label
+                htmlFor="description"
+                className="flex items-center space-x-2 rtl:space-x-reverse">
                 <AlignLeft className="h-4 w-4" />
                 <span>{t.description}</span>
               </Label>
@@ -105,9 +125,11 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t.enterTaskDescription}
                 rows={3}
-                className={errors.description ? 'border-red-500' : ''}
+                className={errors.description ? "border-red-500" : ""}
               />
-              {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
+              {errors.description && (
+                <p className="text-sm text-red-500">{errors.description}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -115,7 +137,9 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
                 <Flag className="h-4 w-4" />
                 <span>{t.priority}</span>
               </Label>
-              <Select value={priority} onValueChange={(value: TaskPriority) => setPriority(value)}>
+              <Select
+                value={priority}
+                onValueChange={(value: TaskPriority) => setPriority(value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -145,7 +169,9 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
             {task && (
               <div className="space-y-2">
                 <Label>{t.status}</Label>
-                <Select value={status} onValueChange={(value: TaskStatus) => setStatus(value)}>
+                <Select
+                  value={status}
+                  onValueChange={(value: TaskStatus) => setStatus(value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -159,7 +185,9 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="dueDate" className="flex items-center space-x-2 rtl:space-x-reverse">
+              <Label
+                htmlFor="dueDate"
+                className="flex items-center space-x-2 rtl:space-x-reverse">
                 <Calendar className="h-4 w-4" />
                 <span>{t.dueDateOptional}</span>
               </Label>
@@ -168,7 +196,7 @@ export function TaskForm({ task, onSubmit, onClose, translations: t, rtl }: Task
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
             </div>
 

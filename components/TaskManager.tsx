@@ -1,27 +1,29 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Plus, Moon, Sun, Filter } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { TaskForm } from './TaskForm';
-import { TaskList } from './TaskList';
-import { TaskFilters } from './TaskFilters';
-import { LanguageSwitcher } from './LanguageSwitcher';
-import { Task, TaskPriority, TaskStatus } from '@/types/task';
-import { Language, getTranslation, isRTL } from '@/lib/i18n';
+import { useState, useEffect } from "react";
+import { Plus, Moon, Sun, Filter } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { TaskForm } from "./TaskForm";
+import { TaskList } from "./TaskList";
+import { TaskFilters } from "./TaskFilters";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { Task, TaskPriority, TaskStatus } from "@/types/task";
+import { Language, getTranslation, isRTL } from "@/lib/i18n";
 
 export function TaskManager() {
   const [mounted, setMounted] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
-  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'all'>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [language, setLanguage] = useState<Language>('en');
+  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
+  const [priorityFilter, setPriorityFilter] = useState<TaskPriority | "all">(
+    "all"
+  );
+  const [searchTerm, setSearchTerm] = useState("");
+  const [language, setLanguage] = useState<Language>("en");
   const { theme, setTheme } = useTheme();
 
   const t = getTranslation(language);
@@ -33,39 +35,39 @@ export function TaskManager() {
 
   // Load tasks and language from localStorage on component mount
   useEffect(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    const savedLanguage = localStorage.getItem('language') as Language;
-    
+    const savedTasks = localStorage.getItem("tasks");
+    const savedLanguage = localStorage.getItem("language") as Language;
+
     if (savedTasks) {
       try {
         const parsedTasks = JSON.parse(savedTasks);
         setTasks(parsedTasks);
       } catch (error) {
-        console.error('Error loading tasks from localStorage:', error);
+        console.error("Error loading tasks from localStorage:", error);
       }
     }
-    
-    if (savedLanguage && ['en', 'ar', 'tr'].includes(savedLanguage)) {
+
+    if (savedLanguage && ["en", "ar", "tr"].includes(savedLanguage)) {
       setLanguage(savedLanguage);
     }
   }, []);
 
   // Save tasks to localStorage whenever tasks change
   useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
 
   // Save language to localStorage whenever language changes
   useEffect(() => {
-    localStorage.setItem('language', language);
+    localStorage.setItem("language", language);
     // Update document direction for RTL support
-    document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+    document.documentElement.dir = rtl ? "rtl" : "ltr";
     document.documentElement.lang = language;
   }, [language, rtl]);
-  
+
   if (!mounted) return null;
 
-  const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addTask = (taskData: Omit<Task, "id" | "createdAt" | "updatedAt">) => {
     const newTask: Task = {
       ...taskData,
       id: Date.now().toString(),
@@ -77,38 +79,45 @@ export function TaskManager() {
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { ...task, ...updates, updatedAt: new Date().toISOString() }
-        : task
-    ));
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId
+          ? { ...task, ...updates, updatedAt: new Date().toISOString() }
+          : task
+      )
+    );
     setEditingTask(null);
   };
 
   const deleteTask = (taskId: string) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
+    setTasks(tasks.filter((task) => task.id !== taskId));
   };
 
   const toggleTaskComplete = (taskId: string) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { 
-            ...task, 
-            status: task.status === 'completed' ? 'pending' : 'completed',
-            updatedAt: new Date().toISOString()
-          }
-        : task
-    ));
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              status: task.status === "completed" ? "pending" : "completed",
+              updatedAt: new Date().toISOString(),
+            }
+          : task
+      )
+    );
   };
 
-  const filteredTasks = tasks.filter(task => {
-    const matchesStatusFilter = filter === 'all' || 
-      (filter === 'active' && task.status !== 'completed') ||
-      (filter === 'completed' && task.status === 'completed');
-    
-    const matchesPriorityFilter = priorityFilter === 'all' || task.priority === priorityFilter;
-    
-    const matchesSearchTerm = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredTasks = tasks.filter((task) => {
+    const matchesStatusFilter =
+      filter === "all" ||
+      (filter === "active" && task.status !== "completed") ||
+      (filter === "completed" && task.status === "completed");
+
+    const matchesPriorityFilter =
+      priorityFilter === "all" || task.priority === priorityFilter;
+
+    const matchesSearchTerm =
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       task.description.toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesStatusFilter && matchesPriorityFilter && matchesSearchTerm;
@@ -116,12 +125,15 @@ export function TaskManager() {
 
   const taskCounts = {
     all: tasks.length,
-    active: tasks.filter(task => task.status !== 'completed').length,
-    completed: tasks.filter(task => task.status === 'completed').length,
+    active: tasks.filter((task) => task.status !== "completed").length,
+    completed: tasks.filter((task) => task.status === "completed").length,
   };
 
   return (
-    <div className={`container mx-auto px-4 py-8 max-w-4xl ${rtl ? 'rtl' : 'ltr'}`}>
+    <div
+      className={`container mx-auto px-4 py-8 max-w-4xl ${
+        rtl ? "rtl" : "ltr"
+      }`}>
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -133,25 +145,26 @@ export function TaskManager() {
             </p>
           </div>
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
-            <LanguageSwitcher 
-              currentLanguage={language} 
-              onLanguageChange={setLanguage} 
+            <LanguageSwitcher
+              currentLanguage={language}
+              onLanguageChange={setLanguage}
             />
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
             </Button>
             <Button
-  onClick={() => setShowTaskForm(true)}
-  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base whitespace-nowrap"
->
-  <Plus className="h-4 w-4 mr-0 sm:mr-2" />
-  <span className="hidden sm:inline">{t.addTask}</span>
-</Button>
-
+              onClick={() => setShowTaskForm(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base whitespace-nowrap">
+              <Plus className="h-4 w-4 mr-0 sm:mr-2" />
+              <span className="hidden sm:inline">{t.addTask}</span>
+            </Button>
           </div>
         </div>
 
@@ -245,9 +258,10 @@ export function TaskManager() {
       {(showTaskForm || editingTask) && (
         <TaskForm
           task={editingTask}
-          onSubmit={editingTask ? 
-            (updates) => updateTask(editingTask.id, updates) : 
-            addTask
+          onSubmit={
+            editingTask
+              ? (updates) => updateTask(editingTask.id, updates)
+              : addTask
           }
           onClose={() => {
             setShowTaskForm(false);
